@@ -9,130 +9,45 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* --- RP SUITE THEME (Midnight Blue v10.10) --- */
+        /* --- RP SUITE THEME (Midnight Blue) --- */
         :root {
-            --bg-app: #0d1117;       /* Deep Midnight Blue */
-            --bg-panel: #161b22;     /* Lighter Midnight Blue for Cards */
-            --bg-header: #21262d;    /* Distinct Header Tone */
-            --text-main: #c9d1d9;    /* Soft White */
-            --text-muted: #8b949e;   /* Blue-Grey Muted Text */
-            --accent-green: #2ea043; /* GitHub-style Green */
+            --bg-app: #0d1117;       
+            --bg-panel: #161b22;     
+            --bg-header: #21262d;    
+            --text-main: #c9d1d9;    
+            --text-muted: #8b949e;   
+            --accent-green: #2ea043; 
             --accent-blue: #58a6ff;
-            --accent-purple: #bc8cff;
             --accent-red: #da3633;
             --border-color: #30363d; 
             --radius-sm: 4px;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-app);
-            color: var(--text-main);
-            padding: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-app); color: var(--text-main); padding: 40px; max-width: 1200px; margin: 0 auto; }
 
-        /* --- HEADER --- */
-        .suite-header {
-            margin-bottom: 50px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        h1 {
-            font-family: "Segoe UI Variable Display", "Segoe UI", sans-serif;
-            font-weight: 400;
-            font-size: 2rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin: 0;
-            display: flex; align-items: center; gap: 15px; color: #fff;
-        }
-        h1::before {
-            content: ""; display: block; width: 6px; height: 32px; background: var(--accent-green);
-        }
-
-        .user-badge {
-            font-size: 0.9rem; color: var(--text-muted); font-weight: 600;
-            display: flex; align-items: center; gap: 10px; cursor: pointer;
-            transition: color 0.2s;
-        }
+        .suite-header { margin-bottom: 50px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+        h1 { font-family: "Segoe UI Variable Display", "Segoe UI", sans-serif; font-weight: 400; font-size: 2rem; letter-spacing: 4px; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 15px; color: #fff; }
+        h1::before { content: ""; display: block; width: 6px; height: 32px; background: var(--accent-green); }
+        .user-badge { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: color 0.2s; }
         .user-badge:hover { color: var(--accent-red); }
         .status-dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 8px var(--accent-green); }
 
-        /* --- APP GRID --- */
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .app-card {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 30px;
-            transition: all 0.2s ease;
-            text-decoration: none; /* Remove underline from links */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 180px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .app-card:hover {
-            border-color: var(--text-muted);
-            transform: translateY(-2px);
-            background: var(--bg-header);
-        }
-
-        .card-icon {
-            color: var(--text-main);
-            margin-bottom: 15px;
-        }
-
-        .card-title {
-            color: #fff;
-            font-size: 1.2rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .card-desc {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            line-height: 1.4;
-        }
-
-        .card-status {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            padding: 4px 8px;
-            border-radius: var(--radius-sm);
-            width: fit-content;
-            margin-top: auto;
-        }
-
+        .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        .app-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 30px; transition: all 0.2s ease; text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; height: 180px; position: relative; overflow: hidden; }
+        .app-card:hover { border-color: var(--text-muted); transform: translateY(-2px); background: var(--bg-header); }
+        .card-icon { color: var(--text-main); margin-bottom: 15px; }
+        .card-title { color: #fff; font-size: 1.2rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 5px; text-transform: uppercase; }
+        .card-desc { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; }
+        .card-status { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: var(--radius-sm); width: fit-content; margin-top: auto; }
         .status-live { background: rgba(46, 160, 67, 0.15); color: var(--accent-green); }
         .status-dev { background: rgba(56, 139, 253, 0.15); color: var(--accent-blue); }
         .status-wip { background: rgba(139, 148, 158, 0.15); color: var(--text-muted); }
 
-        /* --- LOCK SCREEN --- */
         #lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-app); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
         #password-input { background: var(--bg-panel); width: 250px; text-align: center; border: 1px solid var(--accent-green); padding: 15px; font-size: 1.2rem; letter-spacing: 5px; color: var(--accent-green); outline: none; margin-top: 20px;}
     </style>
 </head>
 <body>
-
     <div id="lock-screen">
         <div style="color: #fff; font-weight: 400; letter-spacing: 4px; font-family: 'Segoe UI', sans-serif; font-size: 1.5rem; text-transform: uppercase;">RP WAREHOUSE OS</div>
         <input type="password" id="password-input" placeholder="ACCESS CODE" onkeyup="checkPass(event)">
@@ -148,34 +63,27 @@
         </header>
 
         <div class="app-grid">
-            
-            <a href="label-tool.html" class="app-card">
+            <a href="label-batch.html" class="app-card">
                 <div>
-                    <div class="card-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    </div>
+                    <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
                     <div class="card-title">LabelBatch</div>
                     <div class="card-desc">Import Dockmaster schedules (CSV/XLSX) to generate bulk labels.</div>
                 </div>
                 <div class="card-status status-live">● LIVE</div>
             </a>
 
-            <a href="quick-label.html" class="app-card">
+            <a href="label-gen.html" class="app-card">
                 <div>
-                    <div class="card-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    </div>
+                    <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></div>
                     <div class="card-title">LabelGen</div>
                     <div class="card-desc">Manual creation. Format A (Single), B (Multi), and C (Free Text).</div>
                 </div>
                 <div class="card-status status-live">● LIVE</div>
             </a>
 
-            <a href="floor-tracker.html" class="app-card">
+            <a href="floor-planner.html" class="app-card">
                 <div>
-                    <div class="card-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                    </div>
+                    <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div>
                     <div class="card-title">FloorPlanner</div>
                     <div class="card-desc">Map pallet locations and manage floor capacity.</div>
                 </div>
@@ -184,37 +92,30 @@
 
             <a href="#" class="app-card" style="opacity: 0.6; cursor: not-allowed;">
                 <div>
-                    <div class="card-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                    </div>
+                    <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
                     <div class="card-title">Team Roster</div>
                     <div class="card-desc">Shift planning and allocation for the inbound team.</div>
                 </div>
                 <div class="card-status status-wip">PLANNED</div>
             </a>
-
         </div>
     </div>
 
     <script>
         const ACCESS_CODE = "IB2025"; 
-
-        // AUTO-LOGIN CHECK
         if(localStorage.getItem('rp_session') === 'active') {
             document.getElementById('lock-screen').style.display = 'none';
             document.getElementById('app-content').style.display = 'block';
         }
-
         function checkPass(event) {
             if (event.key === "Enter") {
                 if (document.getElementById('password-input').value === ACCESS_CODE) {
-                    localStorage.setItem('rp_session', 'active'); // SAVE SESSION
+                    localStorage.setItem('rp_session', 'active'); 
                     document.getElementById('lock-screen').style.display = 'none';
                     document.getElementById('app-content').style.display = 'block';
                 } else { alert("ACCESS DENIED"); }
             }
         }
-
         function logout() {
             if(confirm("Logout of RP OS?")) {
                 localStorage.removeItem('rp_session');
