@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LABELBATCH V5.2</title>
+    <title>LABELBATCH V5.4</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
         :root {
             --bg-app: #0d1117; --bg-panel: #161b22; --bg-header: #21262d; --bg-input: #010409;     
             --text-main: #c9d1d9; --text-muted: #8b949e; --accent-green: #10b981; 
-            --accent-blue: #58a6ff; --border-color: #30363d; --radius-sm: 4px; 
+            --accent-blue: #58a6ff; --accent-red: #f85149; --border-color: #30363d; --radius-sm: 4px; 
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-app); color: var(--text-main); padding: 40px; max-width: 1400px; margin: 0 auto; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
@@ -28,6 +28,12 @@
         .btn-nav { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: var(--radius-sm); }
         .btn-nav:hover { background: #30363d; color: #fff; }
         .btn-print-batch { background: var(--accent-green); color: #0d1117; font-weight: 800; padding: 10px 20px; border: none; border-radius: var(--radius-sm); cursor: pointer; text-transform: uppercase; }
+        
+        /* FOOTER ACTIONS AREA */
+        .footer-actions { display: flex; justify-content: center; margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--border-color); }
+        .btn-reset-main { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px 30px; font-weight: 800; font-size: 0.8rem; border-radius: var(--radius-sm); cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.2s; }
+        .btn-reset-main:hover { background: var(--accent-red); color: #fff; }
+
         .isa-bundle { background: var(--bg-panel); border: 1px solid var(--border-color); margin-bottom: 15px; border-radius: var(--radius-sm); overflow: hidden; }
         .isa-bundle.selected { border-left: 4px solid var(--accent-green); }
         .isa-header { background: var(--bg-header); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -63,7 +69,12 @@
     </div>
 
     <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileUpload').click()"><span id="uploadText">CLICK TO UPLOAD SCHEDULE (.XLSX / .CSV)</span><input type="file" id="fileUpload" accept=".csv, .xlsx, .xls" style="display:none" onchange="handleFile(this)"></div>
+    
     <div id="dashboardArea"></div>
+
+    <div class="footer-actions" id="footerActions" style="display:none">
+        <button class="btn-reset-main" onclick="resetAllData()">Reset Manifest List</button>
+    </div>
 
     <script>
         let ISA_GROUPS = {}, activeFileHandle = null, searchQuery = "";
@@ -72,10 +83,26 @@
         function syncToBrowser() { localStorage.setItem('RP_ACTIVE_ISA', JSON.stringify(ISA_GROUPS)); }
         window.onload = () => { const saved = localStorage.getItem('RP_ACTIVE_ISA'); if(saved) { ISA_GROUPS = JSON.parse(saved); renderDashboard(); } };
 
+        function resetAllData() {
+            if(confirm("DANGER: This will permanently wipe all loaded manifests and custom PO numbers. Continue?")) {
+                ISA_GROUPS = {};
+                syncToBrowser();
+                location.reload();
+            }
+        }
+
         function renderDashboard() {
             const container = document.getElementById('dashboardArea'); container.innerHTML = "";
             const entries = Object.entries(ISA_GROUPS);
-            if (entries.length > 0) document.getElementById('globalActions').style.display = 'flex';
+            if (entries.length > 0) {
+                document.getElementById('globalActions').style.display = 'flex';
+                document.getElementById('uploadZone').style.display = 'none';
+                document.getElementById('footerActions').style.display = 'flex'; // Show reset button
+            } else {
+                document.getElementById('globalActions').style.display = 'none';
+                document.getElementById('uploadZone').style.display = 'block';
+                document.getElementById('footerActions').style.display = 'none'; // Hide reset button
+            }
             entries.forEach(([key, b]) => {
                 if (searchQuery && !(b.id.toLowerCase().includes(searchQuery) || b.carrier.toLowerCase().includes(searchQuery) || b.jobs.some(j => j.isd.toLowerCase().includes(searchQuery)))) return;
                 const card = document.createElement('div'); card.className = `isa-bundle ${b.selected ? 'selected' : ''} ${b.collapsed ? 'collapsed' : ''}`;
@@ -85,24 +112,7 @@
             });
         }
 
-        function getSatchelPageHtml(id) {
-            const b = ISA_GROUPS[id];
-            const totalPallets = b.jobs.reduce((s,j)=>s+j.qty, 0);
-            const totalItems = b.jobs.reduce((s,j)=>s+(j.items || 0), 0);
-            
-            // --- LOGIC: Limit to 10 ISDs ---
-            const displayJobs = b.jobs.slice(0, 10);
-            const hasMore = b.jobs.length > 10;
-            
-            let tableRows = displayJobs.map(j => `<tr><td style="padding:6px 12px; border-bottom:1px solid #000; font-size:0.85rem;">${j.isd}</td><td style="padding:6px 12px; border-bottom:1px solid #000; font-size:0.85rem;">${j.po || '-'}</td><td style="padding:6px 12px; border-bottom:1px solid #000; font-size:0.85rem; text-align:center; font-weight:bold;">${j.qty}</td><td style="padding:6px 12px; border-bottom:1px solid #000; font-size:0.85rem; text-align:center;">${j.items || 0}</td></tr>`).join('');
-            
-            if (hasMore) {
-                tableRows += `<tr><td colspan="4" style="padding:10px; text-align:center; font-weight:800; font-size:0.9rem; letter-spacing:1px; color:#444;">[See Appointment Information]</td></tr>`;
-            }
-
-            return `<div class="satchel-page"><div class="back-half"><h3>Detailed Manifest</h3><table><thead><tr><th>ISD Shipment</th><th>PO#</th><th style="text-align:center">PLT</th><th style="text-align:center">ITM</th></tr></thead><tbody>${tableRows}</tbody></table><div class="summary"><span>PALLETS: ${totalPallets}</span><span>ITEMS: ${totalItems}</span></div></div><div class="front-half"><div class="carrier-primary" style="font-size:3.3rem;">${b.carrier}</div><div class="isa-secondary" style="font-size:1.6rem;">ISA: ${b.id}</div><div class="date-time" style="font-size:1.4rem;">${b.date} &nbsp;|&nbsp; ${b.time}</div></div></div>`;
-        }
-
+        function getSatchelPageHtml(id) { const b = ISA_GROUPS[id]; const totalPallets = b.jobs.reduce((s,j)=>s+j.qty, 0); const totalItems = b.jobs.reduce((s,j)=>s+(j.items || 0), 0); const displayJobs = b.jobs.slice(0, 10); const hasMore = b.jobs.length > 10; let tableRows = displayJobs.map(j => `<tr><td style="padding:6px 12px; border-bottom:1px solid #000; font-size:0.85rem;">${j.isd}</td><td style="padding:6px 12px; border-bottom:1px solid #000; font-size:0.85rem;">${j.po || '-'}</td><td style="padding:6px 12px; border-bottom:1px solid #000; font-size:0.85rem; text-align:center; font-weight:bold;">${j.qty}</td><td style="padding:6px 12px; border-bottom:1px solid #000; font-size:0.85rem; text-align:center;">${j.items || 0}</td></tr>`).join(''); if (hasMore) { tableRows += `<tr><td colspan="4" style="padding:10px; text-align:center; font-weight:800; font-size:0.9rem; letter-spacing:1px; color:#444;">[See Appointment Information]</td></tr>`; } return `<div class="satchel-page"><div class="back-half"><h3>Detailed Manifest</h3><table><thead><tr><th>ISD Shipment</th><th>PO#</th><th style="text-align:center">PLT</th><th style="text-align:center">ITM</th></tr></thead><tbody>${tableRows}</tbody></table><div class="summary"><span>PALLETS: ${totalPallets}</span><span>ITEMS: ${totalItems}</span></div></div><div class="front-half"><div class="carrier-primary" style="font-size:3.3rem;">${b.carrier}</div><div class="isa-secondary" style="font-size:1.6rem;">ISA: ${b.id}</div><div class="date-time" style="font-size:1.4rem;">${b.date} &nbsp;|&nbsp; ${b.time}</div></div></div>`; }
         function writeSatchelBatch(win, ids) { let content = ids.map(id => getSatchelPageHtml(id)).join(''); win.document.write(`<html><head><style>@page { size: A4 portrait; margin: 0; } body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; color: #000; } .satchel-page { height: 297mm; width: 210mm; display: flex; flex-direction: column; overflow: hidden; page-break-after: always; } .back-half { height: 148.5mm; padding: 15mm 20mm; box-sizing: border-box; overflow: hidden; } .back-half h3 { margin: 0 0 10px 0; font-size: 1.2rem; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 5px; } .front-half { height: 148.5mm; padding: 20mm; box-sizing: border-box; display: flex; flex-direction: column; transform: rotate(180deg); justify-content: flex-start; padding-top: 10mm; } .carrier-primary { font-weight: 800; line-height: 0.85; margin-bottom: 12px; text-transform: uppercase; } .isa-secondary { font-weight: 600; border-top: 3px solid #000; padding-top: 8px; margin-bottom: 6px; } .date-time { color: #333; } table { width: 100%; border-collapse: collapse; margin-top: 5px; } th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #000; font-size: 0.75rem; text-transform: uppercase; } .summary { margin-top: 15px; display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; border-top: 1px solid #000; padding-top: 8px; }</style></head><body>${content}<script>window.onload = () => { window.print(); window.close(); };<\/script></body></html>`); win.document.close(); }
         function printSatchel(id) { const sWin = window.open('', '_blank', 'width=900,height=1000'); writeSatchelBatch(sWin, [id]); }
         function printSelectedSatchels() { const sel = Object.keys(ISA_GROUPS).filter(k => ISA_GROUPS[k].selected); if (!sel.length) return; const sWin = window.open('', '_blank', 'width=900,height=1000'); writeSatchelBatch(sWin, sel); }
@@ -110,8 +120,9 @@
         function printSingle(id, idx) { const b = ISA_GROUPS[id], j = b.jobs[idx], list = []; if(j.qty === 0) list.push(ZPL.label(b.carrier, b.date, b.time, j.isd, j.po, 0, 1, false)); else for(let i=1; i<=j.qty; i++) list.push(ZPL.label(b.carrier, b.date, b.time, j.isd, j.po, i, j.qty, false)); launchPrinter(list); }
         function printBundle(id) { const b = ISA_GROUPS[id], labels = []; b.jobs.forEach(j => { if(j.qty === 0) labels.push(ZPL.label(b.carrier, b.date, b.time, j.isd, j.po, 0, 1, false)); else for(let i=1; i<=j.qty; i++) labels.push(ZPL.label(b.carrier, b.date, b.time, j.isd, j.po, i, j.qty, false)); }); launchPrinter(labels); }
         function printSelectedBundles() { let mega = []; Object.keys(ISA_GROUPS).filter(k => ISA_GROUPS[k].selected).forEach(id => { const b = ISA_GROUPS[id]; b.jobs.forEach(j => { if(j.qty === 0) mega.push(ZPL.label(b.carrier, b.date, b.time, j.isd, j.po, 0, 1, false)); else for(let i=1; i<=j.qty; i++) mega.push(ZPL.label(b.carrier, b.date, b.time, j.isd, j.po, i, j.qty, false)); }); }); launchPrinter(mega); }
+        
         function handleFile(input) { const r = new FileReader(); r.onload = (e) => { const d = new Uint8Array(e.target.result); const wb = XLSX.read(d, {type: 'array'}); parseData(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1})); }; r.readAsArrayBuffer(input.files[0]); }
-        function parseData(rows) { ISA_GROUPS = {}; for(let i=1; i<rows.length; i++) { const r = rows[i]; if(!r || !r[2]) continue; const id = String(r[2]).trim(); if(!ISA_GROUPS[id]) ISA_GROUPS[id] = { id, carrier: r[4] ? String(r[4]).toUpperCase() : "INBOUND", date: formatShortDate(r[0]), time: formatTime(r[1]), mode: 'expanded', selected: true, collapsed: false, jobs: [] }; ISA_GROUPS[id].jobs.push({ isd: String(r[3]), qty: parseInt(r[6]) || 0, items: parseInt(r[7]) || 0, po: '', printed: false }); } syncToBrowser(); renderDashboard(); }
+        function parseData(rows) { for(let i=1; i<rows.length; i++) { const r = rows[i]; if(!r || !r[2]) continue; const id = String(r[2]).trim(); if(!ISA_GROUPS[id]) ISA_GROUPS[id] = { id, carrier: r[4] ? String(r[4]).toUpperCase() : "INBOUND", date: formatShortDate(r[0]), time: formatTime(r[1]), mode: 'expanded', selected: true, collapsed: false, jobs: [] }; ISA_GROUPS[id].jobs.push({ isd: String(r[3]), qty: parseInt(r[6]) || 0, items: parseInt(r[7]) || 0, po: '', printed: false }); } syncToBrowser(); renderDashboard(); }
         async function saveData() { if (Object.keys(ISA_GROUPS).length === 0) return; if (!activeFileHandle) return saveAsData(); const w = await activeFileHandle.createWritable(); await w.write(JSON.stringify(ISA_GROUPS)); await w.close(); alert("Saved."); }
         async function saveAsData() { try { const h = await window.showSaveFilePicker({ suggestedName: `BATCH_${new Date().toLocaleDateString('en-GB').replace(/\//g,'.')}.json` }); activeFileHandle = h; saveData(); } catch (e) {} }
         function loadData(i) { const r = new FileReader(); r.onload = (e) => { ISA_GROUPS = JSON.parse(e.target.result); syncToBrowser(); renderDashboard(); }; r.readAsText(i.files[0]); }
@@ -121,6 +132,9 @@
         function toggleCollapse(id) { ISA_GROUPS[id].collapsed = !ISA_GROUPS[id].collapsed; renderDashboard(); }
         function formatShortDate(n) { if (typeof n === 'number') { const d = new Date((n - 25569) * 86400 * 1000); return d.getDate() + ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()]; } return String(n); }
         function formatTime(n) { if (!n) return ""; if (typeof n === 'number') { const s = Math.round(n * 86400), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60); return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`; } return String(n); }
+
+        let idleTimer;
+        function resetIdleTimer() { clearTimeout(idleTimer); idleTimer = setTimeout(() => { syncToBrowser(); }, 600000); }
     </script>
 </body>
 </html>
