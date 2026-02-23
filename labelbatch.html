@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LABELBATCH V7.3</title>
+    <title>LABELBATCH V8.2</title>
     
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     
@@ -532,18 +532,101 @@
             return `<div class="satchel-page"><div class="back-half"><h3>Detailed Manifest</h3><table><thead><tr><th>ISD Shipment</th><th>PO#</th><th align="center">PLT</th><th align="center">ITM</th></tr></thead><tbody>${tableRows}</tbody></table><div class="summary"><span>PALLETS: ${totalPal}</span><span>ITEMS: ${totalUnit}</span></div></div><div class="front-half"><div style="display: flex; justify-content: space-between; align-items: flex-start;"><div style="flex: 1;"><div class="carrier-primary" style="font-size: 3.5rem;">${b.carrier}</div><div class="isa-secondary" style="font-size: 1.8rem;">ISA: ${b.id}</div><div class="date-time" style="font-size: 1.2rem;">${b.date} | ${b.time}</div></div><div style="border: 8px solid #000; padding: 15px; text-align: center; min-width: 120px;"><div style="font-size: 1rem; font-weight: 800; margin-bottom: 5px;">PALLETS</div><div style="font-size: 4rem; font-weight: 900; line-height: 1;">${totalPal}</div></div></div></div></div>`; 
         }
 
-        function writeSatchelBatch(win, ids) { 
-            let content = ids.map(id => getSatchelPageHtml(id)).join(''); 
-            win.document.write(`<html><head><style>@page { size: A4 portrait; margin: 0; } body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; color: #000; } .satchel-page { height: 297mm; width: 210mm; display: flex; flex-direction: column; overflow: hidden; page-break-after: always; } .back-half { height: 148.5mm; padding: 15mm 20mm; box-sizing: border-box; overflow: hidden; } .back-half h3 { margin: 0 0 10px 0; font-size: 1.2rem; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 5px; } .front-half { height: 148.5mm; padding: 20mm; box-sizing: border-box; display: flex; flex-direction: column; transform: rotate(180deg); justify-content: center; border-top: 1px dashed #ccc; } .carrier-primary { font-weight: 800; line-height: 0.9; margin-bottom: 12px; text-transform: uppercase; } .isa-secondary { font-weight: 600; border-top: 4px solid #000; padding-top: 12px; margin-bottom: 6px; } .date-time { color: #333; font-weight: 400; } table { width: 100%; border-collapse: collapse; margin-top: 5px; } th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #000; font-size: 0.75rem; text-transform: uppercase; } td { padding: 6px 12px; border-bottom: 1px solid #eee; } .summary { margin-top: 15px; display: flex; justify-content: space-between; font-weight: 800; font-size: 1rem; border-top: 2px solid #000; padding-top: 10px; }</style></head><body>${content}<script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };<\/script></body></html>`); 
-            win.document.close(); 
-        }
+  function writeSatchelBatch(win, ids) { 
+    let content = ids.map(id => getSatchelPageHtml(id)).join(''); 
+    
+    win.document.write(`
+        <html>
+        <head>
+            <style>
+                @page { size: A4 portrait; margin: 0; } 
+                body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; color: #000; } 
+                
+                .satchel-page { 
+                    height: 295mm; 
+                    width: 205mm; 
+                    display: flex; 
+                    flex-direction: column; 
+                    overflow: hidden; 
+                    page-break-after: always; 
+                } 
 
-        function printSatchel(id) { const sWin = window.open('', '_blank', 'width=900,height=1000'); writeSatchelBatch(sWin, [id]); }
-        function printSelectedSatchels() { const sel = Object.keys(ISA_GROUPS).filter(k => ISA_GROUPS[k].selected); if (!sel.length) return alert("Select at least one."); const sWin = window.open('', '_blank', 'width=900,height=1000'); writeSatchelBatch(sWin, sel); }
-    </script>
-</body>
-</html>
+                .back-half { 
+                    height: 148.5mm; 
+                    padding: 15mm 20mm; 
+                    box-sizing: border-box; 
+                    overflow: hidden; 
+                } 
 
+                .back-half h3 { 
+                    margin: 0 0 10px 0; 
+                    font-size: 1.2rem; 
+                    text-transform: uppercase; 
+                    border-bottom: 2px solid #000; 
+                    padding-bottom: 5px; 
+                } 
 
+                .front-half { 
+                    height: 148.5mm; 
+                    padding: 20mm; 
+                    box-sizing: border-box; 
+                    display: flex; 
+                    flex-direction: column; 
+                    transform: rotate(180deg); 
+                    justify-content: flex-start; /* Pushes content to the top edge */
+                    border-top: 1px dashed #ccc; 
+                } 
 
+                .carrier-primary { 
+                    font-weight: 800; 
+                    line-height: 0.9; 
+                    margin-bottom: 5mm; 
+                    text-transform: uppercase; 
+                    font-size: 4.5rem; /* Larger for high visibility */
+                } 
+
+                .isa-secondary { 
+                    font-weight: 600; 
+                    border-top: 6px solid #000; 
+                    padding-top: 8mm; 
+                    margin-bottom: 4mm; 
+                    font-size: 2.2rem;
+                } 
+
+                .date-time { 
+                    color: #000; 
+                    font-weight: 400; 
+                    font-size: 1.4rem; 
+                } 
+
+                table { width: 100%; border-collapse: collapse; margin-top: 5px; } 
+                th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #000; font-size: 0.75rem; text-transform: uppercase; } 
+                td { padding: 6px 12px; border-bottom: 1px solid #eee; } 
+
+                .summary { 
+                    margin-top: 15px; 
+                    display: flex; 
+                    justify-content: space-between; 
+                    font-weight: 800; 
+                    font-size: 1rem; 
+                    border-top: 2px solid #000; 
+                    padding-top: 10px; 
+                }
+            </style>
+        </head>
+        <body>
+            ${content}
+            <script>
+                window.onload = () => { 
+                    setTimeout(() => { 
+                        window.print(); 
+                        window.close(); 
+                    }, 500); 
+                };
+            <\/script>
+        </body>
+        </html>
+    `); 
+    win.document.close(); 
+}
 
