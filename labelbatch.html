@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,11 +131,11 @@ const ZPL = {
         const count = current === 0 ? `0 / ${total}` : `${current} / ${total}`; 
         
         // 1. The ID Line (ISA or SHIPMENT)
-        let z = ZPL.getHeader(header, date, time) + `^FO30,330^FB752,1,0,C,0^A0N,30,30^FD${isMaster?"ISA":"SHIPMENT"} ID^FS`;
+        let z = ZPL.getHeader(header, date, time) + `^FO30,330^FB752,1,0,C,0^A0N,30,30^FD${isMaster?"APPOINTMENT":"SHIPMENT"} ID^FS`;
         
         // 2. ONLY ADD WARNING IF IT IS A MASTER (APPOINTMENT) LABEL
         if (isMaster) {
-            z += `^FO30,365^FB752,1,0,C,0^A0N,25,25^FDDO NOT USE TO RECEIVE^FS`;
+            z += `^FO30,365^FB752,1,0,C,0^A0N,25,25^FD: : : : : D O   N O T   U S E   T O   R E C E I V E : : : : :^FS`;
         }
         
         // 3. The Barcode and other info
