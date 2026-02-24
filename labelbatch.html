@@ -123,21 +123,26 @@
     <script>
         let ISA_GROUPS = {}, searchQuery = "";
 
-        const ZPL = { 
+const ZPL = { 
     getHeader: (text, date, time) => `^XA^PW812^LL1200^FO30,40^FB752,2,10,C,0^A0N,100,100^FD${text.toUpperCase()}^FS^FO30,150^FB752,1,0,C,0^A0N,90,90^FD${date}^FS^FO30,240^FB752,1,0,C,0^A0N,50,50^FD(${time})^FS`, 
+    
     label: (header, date, time, id, po, current, total, isMaster) => { 
         const count = current === 0 ? `0 / ${total}` : `${current} / ${total}`; 
         
-        // 1. The ID Line
+        // 1. The ID Line (ISA or SHIPMENT)
         let z = ZPL.getHeader(header, date, time) + `^FO30,330^FB752,1,0,C,0^A0N,30,30^FD${isMaster?"ISA":"SHIPMENT"} ID^FS`;
         
-        // 2. NEW: ADD THIS LINE BELOW FOR THE WARNING TEXT
-        z += `^FO30,365^FB752,1,0,C,0^A0N,30,30^FDDO NOT USE TO RECEIVE^FS`;
+        // 2. ONLY ADD WARNING IF IT IS A MASTER (APPOINTMENT) LABEL
+        if (isMaster) {
+            z += `^FO30,365^FB752,1,0,C,0^A0N,25,25^FDDO NOT USE TO RECEIVE^FS`;
+        }
         
-        // 3. The Barcode (Position moved down to 400 to make room)
-        z += `^FO90,400^BY4,3,300^BCN,300,N,N,N^FD${id}^FS^FO30,710^FB752,1,0,C,0^A0N,60,60^FD${id}^FS`; 
+        // 3. The Barcode and other info
+        // (Note: Barcode position is at 400 for Masters, or 370 for Shipments to keep it tight)
+        const barcodeY = isMaster ? 400 : 370;
+        z += `^FO90,${barcodeY}^BY4,3,300^BCN,300,N,N,N^FD${id}^FS^FO30,${barcodeY + 310}^FB752,1,0,C,0^A0N,60,60^FD${id}^FS`; 
         
-        if(po && po.trim() !== "") z += `^FO30,800^FB752,3,0,C,0^A0N,40,40^FDPO: ${po.toUpperCase().replace(/\n/g, '\\&')}^FS`;
+        if(po && po.trim() !== "") z += `^FO30,${barcodeY + 400}^FB752,3,0,C,0^A0N,40,40^FDPO: ${po.toUpperCase().replace(/\n/g, '\\&')}^FS`;
         z += `^FO30,1050^FB752,1,0,C,0^A0N,150,150^FD${count}^FS^XZ`; 
         return z; 
     } 
@@ -395,6 +400,7 @@ function writeSatchelBatch(win, ids) {
     </script>
 </body>
 </html>
+
 
 
 
