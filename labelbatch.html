@@ -132,7 +132,7 @@
         let z = ZPL.getHeader(header, date, time) + `^FO30,330^FB752,1,0,C,0^A0N,30,30^FD${isMaster?"ISA":"SHIPMENT"} ID^FS`;
         
         // 2. NEW: ADD THIS LINE BELOW FOR THE WARNING TEXT
-        z += `^FO30,365^FB752,1,0,C,0^A0N,25,25^FDDO NOT USE TO RECEIVE^FS`;
+        z += `^FO30,365^FB752,1,0,C,0^A0N,30,30^FDDO NOT USE TO RECEIVE^FS`;
         
         // 3. The Barcode (Position moved down to 400 to make room)
         z += `^FO90,400^BY4,3,300^BCN,300,N,N,N^FD${id}^FS^FO30,710^FB752,1,0,C,0^A0N,60,60^FD${id}^FS`; 
@@ -395,6 +395,7 @@ function writeSatchelBatch(win, ids) {
     </script>
 </body>
 </html>
+
 
 
 
