@@ -125,7 +125,11 @@
         let ISA_GROUPS = {}, searchQuery = "";
 
 const ZPL = { 
-    getHeader: (text, date, time) => `^XA^PW812^LL1200^FO30,40^FB752,2,10,C,0^A0N,100,100^FD${text.toUpperCase()}^FS^FO30,150^FB752,1,0,C,0^A0N,90,90^FD${date}^FS^FO30,240^FB752,1,0,C,0^A0N,50,50^FD(${time})^FS`, 
+    getHeader: (text, date, time) => {
+    // This grabs only the first 13 characters and converts to Uppercase
+    const shortText = text.toUpperCase().substring(0, 13);
+    return `^XA^PW812^LL1200^FO30,40^FB752,1,0,C,0^A0N,100,100^FD${shortText}^FS^FO30,150^FB752,1,0,C,0^A0N,90,90^FD${date}^FS^FO30,240^FB752,1,0,C,0^A0N,50,50^FD(${time})^FS`;
+},
     
     label: (header, date, time, id, po, current, total, isMaster) => { 
         const count = current === 0 ? `0 / ${total}` : `${current} / ${total}`; 
@@ -401,7 +405,6 @@ function writeSatchelBatch(win, ids) {
     </script>
 </body>
 </html>
-
 
 
 
